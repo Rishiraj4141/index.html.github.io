@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receipt</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    padding:10px;
+    font-weight:bold;
+}
+h2{
+    text-align:center;
+    color:#1f4fd8;
+    font-weight:900;
+}
+.form-box{
+    background:#fff;
+    padding:15px;
+    border-radius:8px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+label{
+    display:block;
+    margin-top:10px;
+    font-weight:900;
+}
+input{
+    width:100%;
+    padding:7px;
+    margin-top:4px;
+    font-weight:800;
+}
+.radio-group label{
+    font-weight:800;
+    margin-right:15px;
+}
+button{
+    width:100%;
+    padding:10px;
+    margin-top:12px;
+    background:#1f4fd8;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:900;
+}
+
+/* RECEIPT */
+.receipt{
+    background:#fff;
+    padding:15px;
+    margin:20px auto;
+    max-width:520px;
+    border:3px solid #1f4fd8;
+    border-radius:10px;
+    display:none;
+    position:relative;
+}
+
+/* WATERMARK */
+.receipt::before{
+    content:"RAGHUPATI TRAVELS";
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) rotate(-25deg);
+    font-size:42px;
+    font-weight:900;
+    color:rgba(0,0,0,0.06);
+}
+
+/* PAID STAMP */
+.paid-stamp{
+    position:absolute;
+    top:50%;
+    right:15px;
+    transform:translateY(-50%) rotate(-15deg);
+    border:4px solid #1f4fd8;
+    color:#1f4fd8;
+    padding:8px 16px;
+    font-size:28px;
+    font-weight:900;
+}
+
+/* DECORATED FULL NAME */
+.receipt h3{
+    text-align:center;
+    font-size:26px;
+    font-weight:900;
+    letter-spacing:1.2px;
+    color:#1f4fd8;
+    text-transform:uppercase;
+    border-top:3px solid #1f4fd8;
+    border-bottom:3px double #1f4fd8;
+    padding:6px 0;
+    margin-bottom:10px;
+}
+
+.shop-address{
+    text-align:center;
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:12px;
+    line-height:1.5;
+}
+
+.line{
+    font-size:14px;
+    margin:6px 0;
+    font-weight:900;
+}
+.amount{
+    font-size:20px;
+    font-weight:900;
+    border:2px solid #000;
+    padding:6px 12px;
+    display:inline-block;
+}
+.words-box{
+    margin-top:8px;
+    font-size:14px;
+    font-weight:900;
+}
+.note{
+    margin-top:12px;
+    text-align:center;
+    font-size:12px;
+    border-top:2px dashed #999;
+    padding-top:6px;
+    font-weight:800;
+}
+.editable{
+    font-weight:900;
+}
+.editing .editable{
+    border:2px dashed #1f4fd8;
+    background:#eef3ff;
+    padding:2px 4px;
+}
+.btn-row button{
+    width:32%;
+    margin:1%;
+}
+.delete-btn{
+    background:#c41616;
+}
+
+/* PRINT */
+@media print{
+    @page{size:landscape;margin:15mm;}
+    body{background:none;}
+    .form-box,.btn-row{display:none;}
+    .receipt{max-width:100%;box-shadow:none;}
+}
+</style>
+</head>
+
+<body>
+
+<h2>BILL RECEIPT</h2>
+
+<div class="form-box">
+
+<label>STUDENT NAME</label>
+<input id="student">
+
+<label>FATHER'S NAME</label>
+<input id="father">
+
+<label>MOBILE NO.</label>
+<input id="mobile">
+
+<label>CLASS / SECTION</label>
+<input id="classSection" placeholder="e.g. 8-A">
+
+<label>MONTH</label>
+<input id="month" placeholder="e.g. March / March–June">
+
+<label>PAYMENT METHOD</label>
+<div class="radio-group">
+<label><input type="radio" name="payment" value="Cash" checked> CASH</label>
+<label><input type="radio" name="payment" value="Online"> ONLINE</label>
+</div>
+
+<label>AMOUNT (₹)</label>
+<input id="amount" type="number">
+
+<button onclick="generateReceipt()">GENERATE RECEIPT</button>
+
+</div>
+
+<div class="receipt" id="receipt">
+
+<div class="paid-stamp editable">PAID</div>
+
+<h3>M/S RAGHUPATI TRAVELS, AYODHYA</h3>
+
+<div class="shop-address">
+REG. NO: FAI/0011211<br>
+MOBILE: 9935293195<br>
+5/11/63 PANCHKOSI PARIKRAMA MARG, JALPA COLONY<br>
+NEAR UDAYA PUBLIC SCHOOL, FAIZABAD, AYODHYA (U.P) – 224001
+</div>
+
+<div class="line">RECEIPT NO: <span class="editable" id="rReceipt"></span></div>
+<div class="line">STUDENT NAME: <span class="editable" id="rStudent"></span></div>
+<div class="line">FATHER'S NAME: <span class="editable" id="rFather"></span></div>
+<div class="line">MOBILE NO: <span class="editable" id="rMobile"></span></div>
+<div class="line">CLASS / SECTION: <span class="editable" id="rClassSection"></span></div>
+<div class="line">MONTH: <span class="editable" id="rMonth"></span></div>
+<div class="line">DATE: <span class="editable" id="rDate"></span></div>
+<div class="line">PAYMENT METHOD: <span class="editable" id="rPayment"></span></div>
+
+<div class="line">AMOUNT PAID:</div>
+<div class="amount editable" id="rAmount"></div>
+
+<div class="words-box">
+AMOUNT IN WORDS: <span class="editable" id="rWords"></span>
+</div>
+
+<div class="note">
+THIS IS A COMPUTER GENERATED RECEIPT, HENCE NO SIGNATURE IS REQUIRED.
+</div>
+
+<div class="btn-row">
+<button onclick="toggleEdit()" id="editBtn">EDIT</button>
+<button onclick="window.print()">PRINT / PDF</button>
+<button class="delete-btn" onclick="deleteReceipt()">DELETE</button>
+</div>
+
+</div>
+
+<script>
+let editing=false;
+
+function numberToWords(num){
+const a=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
+"Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+const b=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+if(num==0) return "Zero Rupees Only";
+if(num<20) return a[num]+" Rupees Only";
+if(num<100) return b[Math.floor(num/10)]+" "+a[num%10]+" Rupees Only";
+if(num<1000) return a[Math.floor(num/100)]+" Hundred "+numberToWords(num%100);
+if(num<100000) return numberToWords(Math.floor(num/1000))+" Thousand "+numberToWords(num%1000);
+return numberToWords(Math.floor(num/100000))+" Lakh "+numberToWords(num%100000);
+}
+
+function generateReceipt(){
+let no=localStorage.getItem("receiptNo");
+no=no?parseInt(no)+1:1;
+localStorage.setItem("receiptNo",no);
+
+rReceipt.innerText=no;
+rStudent.innerText=student.value||"—";
+rFather.innerText=father.value||"—";
+rMobile.innerText=mobile.value||"—";
+rClassSection.innerText=classSection.value||"—";
+rMonth.innerText=month.value||"—";
+rPayment.innerText=document.querySelector('input[name="payment"]:checked').value.toUpperCase();
+
+let amt=parseInt(amount.value||0);
+rAmount.innerText="₹ "+amt;
+rWords.innerText=numberToWords(amt).toUpperCase();
+
+const d=new Date();
+rDate.innerText=d.toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase();
+
+receipt.style.display="block";
+}
+
+function toggleEdit(){
+editing=!editing;
+receipt.classList.toggle("editing");
+document.querySelectorAll(".editable").forEach(e=>e.contentEditable=editing);
+editBtn.innerText=editing?"SAVE":"EDIT";
+}
+
+function deleteReceipt(){
+if(confirm("DELETE THIS RECEIPT?")){
+receipt.style.display="none";
+editing=false;
+editBtn.innerText="EDIT";
+}
+}
+</script>
+
+</body>
+</html>
